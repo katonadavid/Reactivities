@@ -40,7 +40,7 @@ namespace API
 
             services.AddCors(options => {
                 options.AddPolicy("policy", policy => {
-                    policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    policy.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod();
                 });
             });
         }

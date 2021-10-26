@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import { Header, List, ListItem } from 'semantic-ui-react';
 
 function App() {
 
@@ -14,12 +15,13 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <ul>
-        {activities.map(activitiy => {
-          return <li><span>{activitiy.title}</span><p>{activitiy.description}</p></li>
+    <div>
+        <List>
+          <Header as="h2" icon="users" content="Reactivities" />
+        {activities.map(activity => {
+          return <ListItem key={activity.id}><span>{activity.title}</span><p>{activity.description}</p></ListItem>
         })}
-      </ul>
+        </List>
     </div>
   );
 }
