@@ -22,7 +22,7 @@ namespace Application.Activities
 
             public async Task<List<Activity>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await context.Activities.ToListAsync();
+                return await context.Activities.ToListAsync(cancellationToken);
             }
         }
     }
