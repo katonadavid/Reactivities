@@ -27,7 +27,7 @@ export default function ActivityDetails({activity, openForm, cancelActivity}: Pr
                     <Button basic color='blue' content='Edit' onClick={() => openForm(activity.id)} />
                     <Button basic color='grey' content='Cancel' onClick={cancelActivity} />
                 </Button.Group>
-        </Card.Content>
-      </Card>
+            </Card.Content>
+        </Card>
     )
 }

@@ -18,6 +18,7 @@ function App() {
   }, []);
   
   function onActivitySelect(id: string) {
+    setEditMode(false); 
     setSelectedActivity(activities.find(a => a.id === id));
   }
   
@@ -26,12 +27,24 @@ function App() {
   }
 
   function onFormOpen(id?: string) {
-    id ? onActivitySelect(id) : onActivityCancel();
+    id ? setSelectedActivity(activities.find(a => a.id === id)) : onActivityCancel();
     setEditMode(true);
   }
 
   function onFormClose() {
     setEditMode(false);
+  }
+
+  function onSaveActivity(activity: Activity) {
+    activity.id ? 
+    setActivities([...activities.filter(a => a.id !== activity.id), activity]) : 
+    setActivities([...activities, activity]);
+    setEditMode(false);
+    setSelectedActivity(activity);
+  }
+
+  function onDeleteActivity(id: string) {
+    setActivities([...activities.filter(a => a.id !== id)]);
   }
   
   return (
@@ -46,6 +59,8 @@ function App() {
           editMode={editMode}
           openForm={onFormOpen}
           closeForm={onFormClose}
+          saveActivity={onSaveActivity}
+          deleteActivity={onDeleteActivity}
           />
       </Container>
     </>
