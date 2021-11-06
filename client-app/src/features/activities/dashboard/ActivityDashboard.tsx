@@ -3,21 +3,34 @@ import { Grid } from 'semantic-ui-react';
 import { Activity } from '../../../app/models/Activity';
 import ActivityDetails from '../details/ActivityDetails';
 import ActivityForm from '../form/ActivityForm';
-import Activitylist from './ActivityList';
+import ActivityList from './ActivityList';
 
 interface Props {
     activities: Activity[];
+    selectedActivity?: Activity;
+    selectActivity: (id: string) => void;
+    cancelActivity: () => void;
+    editMode: boolean;
+    openForm: (id: string) => void;
+    closeForm: () => void;
 }
 
-const ActivityDashboard = ({activities}: Props) => {
+const ActivityDashboard = ({activities, selectedActivity, editMode, selectActivity, cancelActivity, openForm, closeForm}: Props) => {
+    
     return (
         <Grid>
             <Grid.Column width='10'>
-                <Activitylist activities={activities}/>
+                <ActivityList activities={activities} onActivitySelected={(id: string) => selectActivity(id)}/>
             </Grid.Column>
             <Grid.Column width='6'>
-                {activities[0] && <ActivityDetails activity={activities[0]} />}
-                <ActivityForm />
+                {selectedActivity && !editMode && 
+                <ActivityDetails
+                    activity={selectedActivity}
+                    openForm={openForm}
+                    cancelActivity={cancelActivity}
+                />}
+                {editMode &&
+                <ActivityForm closeForm={closeForm} activity={selectedActivity} />}
             </Grid.Column>
         </Grid>
     );
