@@ -22,7 +22,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateActivity(Activity activity)
+        public async Task<IActionResult> CreateActivity(NewActivityDTO activity)
         {
             return Ok(await Mediator.Send(new Create.Command { Activity = activity } ));
         }
@@ -31,7 +31,8 @@ namespace API.Controllers
         public async Task<IActionResult> EditActivity(Guid id, Activity activity)
         {
             activity.Id = id;
-            return Ok(await Mediator.Send(new Edit.Command { Activity = activity } ));
+            await Mediator.Send(new Edit.Command { Activity = activity } );
+            return Ok(await Mediator.Send(new Details.Query { Id = id} ));
         }
 
         [HttpDelete("{id}")]

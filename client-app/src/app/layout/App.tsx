@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { Container } from 'semantic-ui-react';
 import { Activity } from '../models/Activity';
 import NavBar from './NavBar';
 import ActivityDashboard from '../../features/activities/dashboard/ActivityDashboard';
+import agent from '../api/agent';
+import LoadingComponent from './LoadingComponent';
 
 function App() {
 
   const [activities, setActivities] = useState<Activity[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity>();
   const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get<Activity[]>('http://localhost:5000/api/activities').then(response => {
-      setActivities(response.data);
+    agent.Activities.list().then(response => {
+      response.map(activity => {
+        activity.date = activity.date.split('T')[0];
+        return activity;
+      })
+      setActivities(response);
+      setLoading(false);
     })
   }, []);
   
@@ -36,17 +44,31 @@ function App() {
   }
 
   function onSaveActivity(activity: Activity) {
-    activity.id ? 
-    setActivities([...activities.filter(a => a.id !== activity.id), activity]) : 
-    setActivities([...activities, activity]);
-    setEditMode(false);
-    setSelectedActivity(activity);
+    setSubmitting(true);
+    if(activity.id) {
+      agent.Activities.update(activity).then((responseActivity: Activity) => {
+        setActivities([...activities.filter(a => a.id !== activity.id), responseActivity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      });
+    } else {
+      agent.Activities.create(activity).then((responseActivity: Activity) => {
+        setActivities([...activities, responseActivity]);
+        setSelectedActivity(activity);
+        setEditMode(false);
+        setSubmitting(false);
+      });
+    }
   }
 
   function onDeleteActivity(id: string) {
     setActivities([...activities.filter(a => a.id !== id)]);
   }
   
+
+  if( loading ) return <LoadingComponent/>
+
   return (
     <>
       <NavBar openForm={onFormOpen} />
@@ -61,6 +83,7 @@ function App() {
           closeForm={onFormClose}
           saveActivity={onSaveActivity}
           deleteActivity={onDeleteActivity}
+          submitting={submitting}
           />
       </Container>
     </>
