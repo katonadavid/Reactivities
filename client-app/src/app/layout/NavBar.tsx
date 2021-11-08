@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button, Container, Menu } from 'semantic-ui-react';
+import { useStore } from '../stores/store';
 
-interface Props {
-    openForm: () => void;
-}
+export default function NavBar() {
 
-export default function NavBar({openForm}: Props) {
+    const {openForm} = useStore().activityStore;
+
     return (
         <Menu inverted fixed="top">
             <Container>
