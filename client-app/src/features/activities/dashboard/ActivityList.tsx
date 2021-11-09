@@ -5,7 +5,7 @@ import { useStore } from '../../../app/stores/store';
 export default function ActivityList() {
 
     const [target, setTarget] = useState('');
-    const {activities, selectActivity, loading: submitting, deleteActivity} = useStore().activityStore;
+    const {activitiesByDate: activities, selectActivity, loading: submitting, deleteActivity} = useStore().activityStore;
     
     function onDelete(e: SyntheticEvent<HTMLButtonElement>, id: string) {
         setTarget(e.currentTarget.name);
