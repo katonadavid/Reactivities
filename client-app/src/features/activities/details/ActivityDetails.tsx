@@ -1,33 +1,38 @@
-import React from 'react'
-import { Button, Card, Image } from 'semantic-ui-react'
+import { observer } from 'mobx-react-lite';
+import React, { useEffect } from 'react'
+import { useParams } from 'react-router-dom';
+import { Grid } from 'semantic-ui-react'
+import LoadingComponent from '../../../app/layout/LoadingComponent';
 import { useStore } from '../../../app/stores/store';
+import ActivityChat from './ActivityChat';
+import ActivityHeader from './ActivityHeader';
+import ActivityInfo from './ActivityInfo';
+import ActivitySidebar from './ActivitySidebar';
 
-export default function ActivityDetails() {
+function ActivityDetails() {
     
-    const {selectedActivity: activity, openForm, cancelSelectedActivity} = useStore().activityStore;
+    const {selectedActivity: activity, loadActivity, loadingInitial} = useStore().activityStore;
+    const {id} = useParams<'id'>();
     
+
+    useEffect(() => {
+        if(id) loadActivity(id);
+    }, [id, loadActivity])
+    
+    if(!activity || loadingInitial) return (<LoadingComponent />);
+
     return (
-        <>
-        {activity && 
-            <Card fluid>
-                <Image src={`/assets/categoryImages/${activity.category}.jpg`} />
-                <Card.Content>
-                    <Card.Header>{activity.title}</Card.Header>
-                    <Card.Meta>
-                        <span>{activity.date}</span>
-                    </Card.Meta>
-                    <Card.Description>
-                        {activity.description}
-                    </Card.Description>
-                </Card.Content>
-                <Card.Content extra>
-                    <Button.Group widths='2'>
-                        <Button basic color='blue' content='Edit' onClick={() => openForm(activity.id)} />
-                        <Button basic color='grey' content='Cancel' onClick={cancelSelectedActivity} />
-                    </Button.Group>
-                </Card.Content>
-            </Card>
-        }
-        </>
+        <Grid>
+            <Grid.Column width='10'>
+                <ActivityHeader activity={activity}/>
+                <ActivityInfo activity={activity}/>
+                <ActivityChat />
+            </Grid.Column>
+            <Grid.Column width='6'>
+                <ActivitySidebar/>
+            </Grid.Column>
+        </Grid>
     )
 }
+
+export default observer(ActivityDetails)
