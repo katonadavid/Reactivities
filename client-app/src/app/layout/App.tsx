@@ -6,11 +6,14 @@ import { Route, Routes } from 'react-router';
 import Homepage from '../../features/home/HomePage';
 import ActivityForm from '../../features/activities/form/ActivityForm';
 import ActivityDetails from '../../features/activities/details/ActivityDetails';
+import TestErrors from '../../features/errors/TestError';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
 
   return (
     <>
+    <ToastContainer position='bottom-right' hideProgressBar/>
     <Routes>
         <Route path='/' element={<Homepage />}/>
         <Route path='/*' element={
@@ -22,6 +25,7 @@ function App() {
               <Route path='activities/:id' element={<ActivityDetails />}/>
               <Route path='create-activity' element={<ActivityForm />}/>
               <Route path='manage/:id' element={<ActivityForm />}/>
+              <Route path='/errors' element={<TestErrors />}/>
             </Routes>
             </Container>
           </>

@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using AutoMapper;
 using Domain;
 using FluentValidation;
@@ -10,7 +11,7 @@ namespace Application.Activities
 {
     public class Create
     {
-        public class Command : IRequest<Activity>
+        public class Command : IRequest<Result<Activity>>
         {
             public Activity Activity { get; set; }
         }
@@ -23,7 +24,7 @@ namespace Application.Activities
             }
         }
 
-        public class Handler : IRequestHandler<Command, Activity>
+        public class Handler : IRequestHandler<Command, Result<Activity>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -34,14 +35,14 @@ namespace Application.Activities
                 _mapper = mapper;
             }
 
-            public async Task<Activity> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Activity>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var newActivity = _context.Activities.Add(_mapper.Map<Activity>(request.Activity));
+                var result = await _context.SaveChangesAsync() > 0;
 
-                await _context.SaveChangesAsync();
-                
-                // This way we let mediatr know that the command has been processed, this equals returning nothing
-                return newActivity.Entity;
+                if(!result) return Result<Activity>.Success(newActivity.Entity);
+                return Result<Activity>.Success(newActivity.Entity);
+
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Application.Core;
 using AutoMapper;
 using Domain;
 using FluentValidation;
@@ -13,7 +14,7 @@ namespace Application.Activities
 {
     public class Edit
     {
-        public class Command : IRequest<Activity>
+        public class Command : IRequest<Result<Activity>>
         {
             public Activity Activity { get; set; }
         }
@@ -26,7 +27,7 @@ namespace Application.Activities
             }
         }
 
-        public class Handler : IRequestHandler<Command, Activity>
+        public class Handler : IRequestHandler<Command, Result<Activity>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -37,15 +38,18 @@ namespace Application.Activities
                 _mapper = mapper;
             }
 
-            public async Task<Activity> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<Result<Activity>> Handle(Command request, CancellationToken cancellationToken)
             {
                 var activity = await _context.Activities.FindAsync(request.Activity.Id);
 
+                if(activity == null) return null;
+
                 var updatedActivity = _mapper.Map(request.Activity, activity);
+                // If we don't change and fields, it is also going to be 0
+                var result = await _context.SaveChangesAsync() > 0;
 
-                await _context.SaveChangesAsync();
-
-                return updatedActivity;
+                if(result) return Result<Activity>.Success(updatedActivity);
+                return Result<Activity>.Failure("Activity could not be updated");
             }
         }
     }
