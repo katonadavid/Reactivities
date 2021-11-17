@@ -1,10 +1,14 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {Button, Header, Segment} from "semantic-ui-react";
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import ValidationErrors from './ValidationErrors';
+import { useNavigate } from 'react-router';
 
 export default function TestErrors() {
-    const baseUrl = 'http://localhost:5000/api/'
+    const baseUrl = 'http://localhost:5000/api/';
+    const [errors, setErrors] = useState(null);
+    const navigate = useNavigate();
 
     function handleNotFound() {
         axios.get(baseUrl + 'buggy/not-found').catch(err => console.log(err.response));
@@ -15,7 +19,7 @@ export default function TestErrors() {
     }
 
     function handleServerError() {
-        axios.get(baseUrl + 'buggy/server-error').catch(err => console.log(err.response));
+        axios.get(baseUrl + 'buggy/server-error').catch(err => navigate('/server-error'));
     }
 
     function handleUnauthorised() {
@@ -23,11 +27,16 @@ export default function TestErrors() {
     }
 
     function handleBadGuid() {
-        axios.get(baseUrl + 'activities/notaguid').catch(err => console.log(err.response));
+        axios.get(baseUrl + 'activities/notaguid').catch((err: AxiosError) => {
+            const errorData: object = (err.response?.data as any).errors;
+            if(err.config.method === "get" && errorData.hasOwnProperty('id')) {
+                navigate('/not-found');
+            }
+        });
     }
 
     function handleValidationError() {
-        axios.post(baseUrl + 'activities', {}).catch(err => console.log(err.response));
+        axios.post(baseUrl + 'activities', {}).catch(err => setErrors(err));
     }
 
     return (
@@ -43,6 +52,8 @@ export default function TestErrors() {
                     <Button onClick={handleBadGuid} content='Bad Guid' basic primary />
                 </Button.Group>
             </Segment>
+            {errors && 
+                <ValidationErrors errors={errors} />}
         </>
     )
 }
