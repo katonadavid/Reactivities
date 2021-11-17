@@ -2,6 +2,7 @@ import { observer } from 'mobx-react-lite'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Item, Button, Segment, Icon } from 'semantic-ui-react'
+import { format } from 'date-fns';
 import { Activity } from '../../../app/models/Activity'
 
 interface Props {
@@ -27,7 +28,7 @@ function ActivityListItem({activity}: Props) {
             </Segment>
             <Segment>
                 <span>
-                    <Icon name='clock' /> {activity.date}
+                    <Icon name='clock' /> {format(activity.date!, 'dd MMM yyyy h:mm aa')}
                     <Icon name='marker' /> {activity.venue}
                 </span>
             </Segment>
