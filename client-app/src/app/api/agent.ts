@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { Activity } from '../models/Activity';
+import { User, UserFormValues } from '../models/User';
 import { store } from '../stores/store';
 
 const sleep = (delay: number) => {
@@ -67,8 +68,15 @@ const Activities = {
     delete: (id: string) => requests.del(`/activities/${id}`)
 }
 
+const Account = {
+    current: () => requests.get<User>('/account'),
+    login: (user: UserFormValues) => requests.post<User>('/account/login', user),
+    register: (user: UserFormValues) => requests.post<User>('/account/register', user)
+}
+
 const agent = {
-    Activities
+    Activities,
+    Account
 }
 
 export default agent;
