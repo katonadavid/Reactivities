@@ -14,6 +14,7 @@ import LoginForm from '../../features/users/LoginForm';
 import { useStore } from '../stores/store';
 import { useEffect } from 'react';
 import LoadingComponent from './LoadingComponent';
+import ModalContainer from '../common/modals/ModalContainer';
 
 function App() {
 
@@ -53,6 +54,7 @@ function App() {
         }/>
       </Routes>
       <ToastContainer position='bottom-right' hideProgressBar/>
+      <ModalContainer />
     </>
   ); 
 }
